@@ -15,19 +15,19 @@ mongoose
   })
   .catch(console.error);
 
-// allows to register routes and middleware
-app.use(express.json()); // parse JSON bodies
-app.use("/", usersRouter); // register the users router
-// if requires are sent to "/", then sent to userRouter
-app.use("/", itemRouter);
-
-// 404 error
+// middleware
 app.use((req, res, next) => {
   req.user = {
     _id: "675cd0260bc2ea74274880e4", // paste the _id of the test user created in the previous step
   };
   next();
 });
+
+// allows to register routes and middleware
+app.use(express.json()); // parse JSON bodies
+app.use("/", usersRouter); // register the users router
+// if requires are sent to "/", then sent to userRouter
+app.use("/", itemRouter);
 
 // start the server
 app.listen(PORT, () => {
