@@ -65,5 +65,41 @@ const deleteItem = (req, res) => {
     });
 };
 
+// like an item by ID
+module.exports.likeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => res.status(200).send(item)) // Send the updated item
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      return res.status(500).send({ message: "Error liking item", err });
+    });
+};
+
+// Dislike (unlike) an item
+module.exports.dislikeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } }, // Remove user ID from likes array
+    { new: true } // Return the updated document
+  )
+    .orFail()
+    .then((item) => res.status(200).send(item)) // Send the updated item
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      return res.status(500).send({ message: "Error disliking item", err });
+    });
+};
+
 // export the route handler
 module.exports = { getItems, createItem, updateItem, deleteItem };
