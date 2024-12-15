@@ -1,7 +1,6 @@
 const mongoose = require("mongoose"); // import the mongoose package
-// eslint-disable-next-line import/no-unresolved
-const validator = require("validator"); // import the validator package
 
+const validator = require("validator");
 // name - the name of the user, a required string from 2 to 30 chars
 // avatar - required string for the URL of the user's image
 // validate - checks if the URL is valid

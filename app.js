@@ -20,7 +20,14 @@ app.use(express.json()); // parse JSON bodies
 app.use("/", usersRouter); // register the users router
 // if requires are sent to "/", then sent to userRouter
 app.use("/", itemRouter);
-// app.use(routes);
+
+// 404 error
+app.use((req, res, next) => {
+  req.user = {
+    _id: "675cd0260bc2ea74274880e4", // paste the _id of the test user created in the previous step
+  };
+  next();
+});
 
 // start the server
 app.listen(PORT, () => {
