@@ -5,6 +5,8 @@ const {
   createItem,
   updateItem,
   deleteItem,
+  likeItem,
+  dislikeItem,
 } = require("../controllers/clothingItem");
 
 // create a new item
@@ -15,6 +17,10 @@ router.get("/items", getItems);
 router.put("/items/:itemId", updateItem);
 // delete an item by ID
 router.delete("/items/:itemId", deleteItem);
+// like an item by ID
+router.put("/items/:itemId/like", likeItem);
+// dislike an item by ID
+router.put("/items/:itemId/dislike", dislikeItem);
 
 // router.use((req, res) => {
 //   res.status(500).send({ message: "Router not found" });
