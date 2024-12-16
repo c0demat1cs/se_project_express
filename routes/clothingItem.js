@@ -20,7 +20,7 @@ router.delete("/items/:itemId", deleteItem);
 // like an item by ID
 router.put("/items/:itemId/like", likeItem);
 // dislike an item by ID
-router.put("/items/:itemId/dislike", dislikeItem);
+router.delete("/items/:itemId/dislike", dislikeItem);
 
 // router.use((req, res) => {
 //   res.status(500).send({ message: "Router not found" });
