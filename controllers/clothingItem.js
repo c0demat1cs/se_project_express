@@ -103,26 +103,6 @@ const likeItem = (req, res) => {
         .send({ message: "Error liking item", err });
     });
 };
-// const likeItem = (req, res) => {
-//   ClothingItem.findByIdAndUpdate(
-//     req.params.itemId,
-//     { $addToSet: { likes: req.user._id } },
-//     { new: true }
-//   )
-//     .orFail()
-//     .then((items) => res.status(200).send(items))
-//     .catch((err) => {
-//       if (err.name === "DocumentNotFoundError") {
-//         return res.status(NOT_FOUND).send({ message: "items not found" });
-//       }
-//       if (err.name === "CastError") {
-//         return res
-//           .status(BAD_REQUEST)
-//           .send({ message: "items request failed" });
-//       }
-//       return res.status(SERVER_ERROR).send({ message: "Get items failed" });
-//     });
-// };
 
 // Dislike (unlike) an item
 const dislikeItem = (req, res) => {
