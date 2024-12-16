@@ -6,9 +6,16 @@ const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
   // pull information from the body of the request
-  const { name, weather, imageURL, owner, likes, createdAt } = req.body;
+  const { name, weather, imageUrl, likes, createdAt } = req.body;
   // create a new item
-  ClothingItem.create({ name, weather, imageURL, owner, likes, createdAt })
+  ClothingItem.create({
+    name,
+    weather,
+    imageUrl,
+    owner: req.user._id,
+    likes,
+    createdAt,
+  })
     .then((item) => {
       // if successful
       res.status(201).send({ data: item }); // recieve the item
@@ -78,21 +85,44 @@ const deleteItem = (req, res) => {
 const likeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
+    { $addToSet: { likes: req.user._id } }, // Add user ID if not already present
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(200).send(item))
+    .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
+      }
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
       return res
         .status(SERVER_ERROR)
         .send({ message: "Error liking item", err });
     });
 };
+// const likeItem = (req, res) => {
+//   ClothingItem.findByIdAndUpdate(
+//     req.params.itemId,
+//     { $addToSet: { likes: req.user._id } },
+//     { new: true }
+//   )
+//     .orFail()
+//     .then((items) => res.status(200).send(items))
+//     .catch((err) => {
+//       if (err.name === "DocumentNotFoundError") {
+//         return res.status(NOT_FOUND).send({ message: "items not found" });
+//       }
+//       if (err.name === "CastError") {
+//         return res
+//           .status(BAD_REQUEST)
+//           .send({ message: "items request failed" });
+//       }
+//       return res.status(SERVER_ERROR).send({ message: "Get items failed" });
+//     });
+// };
 
 // Dislike (unlike) an item
 const dislikeItem = (req, res) => {
