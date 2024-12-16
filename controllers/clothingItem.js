@@ -88,19 +88,20 @@ const likeItem = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // Add user ID if not already present
     { new: true }
   )
-    .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .orFail(new Error("ItemNotFound"))
+    .then((item) => {
+      res.setHeader("Content-Type", "application/json");
+      res.status(200).send({ data: item });
+    })
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
+      if (err.message === "ItemNotFound") {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "Error liking item", err });
+      return res.status(SERVER_ERROR).send({ message: "Error liking item" });
     });
 };
 
@@ -111,16 +112,20 @@ const dislikeItem = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
-    .then((item) => res.status(200).send(item))
+    .orFail(new Error("ItemNotFound"))
+    .then((item) => {
+      res.setHeader("Content-Type", "application/json");
+      res.status(200).send(item);
+    })
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
+      if (err.message === "ItemNotFound") {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "Error disliking item", err });
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+      }
+      return res.status(SERVER_ERROR).send({ message: "Error liking item" });
     });
 };
 

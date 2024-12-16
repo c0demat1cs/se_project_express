@@ -18,9 +18,9 @@ router.put("/:itemId", updateItem);
 // delete an item by ID
 router.delete("/:itemId", deleteItem);
 // like an item by ID
-router.put("/:itemId/like", likeItem);
+router.put("/:itemId/likes", likeItem);
 // dislike an item by ID
-router.delete("/:itemId/dislike", dislikeItem);
+router.delete("/:itemId/likes", dislikeItem);
 
 // router.use((req, res) => {
 //   res.status(500).send({ message: "Router not found" });
