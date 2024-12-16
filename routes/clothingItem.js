@@ -10,17 +10,17 @@ const {
 } = require("../controllers/clothingItem");
 
 // create a new item
-router.post("/items", createItem);
+router.post("/", createItem);
 // get all items
-router.get("/items", getItems);
+router.get("/", getItems);
 // update an item by ID
-router.put("/items/:itemId", updateItem);
+router.put("/:itemId", updateItem);
 // delete an item by ID
-router.delete("/items/:itemId", deleteItem);
+router.delete("/:itemId", deleteItem);
 // like an item by ID
-router.put("/items/:itemId/like", likeItem);
+router.put("/:itemId/like", likeItem);
 // dislike an item by ID
-router.delete("/items/:itemId/dislike", dislikeItem);
+router.delete("/:itemId/dislike", dislikeItem);
 
 // router.use((req, res) => {
 //   res.status(500).send({ message: "Router not found" });

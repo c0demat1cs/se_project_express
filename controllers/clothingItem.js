@@ -5,13 +5,13 @@ const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
 const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
-
-  const { name, weather, imageUrl, owner, likes, createdAt } = req.body;
-
-  ClothingItem.create({ name, weather, imageUrl, owner, likes, createdAt })
+  // pull information from the body of the request
+  const { name, weather, imageURL, owner, likes, createdAt } = req.body;
+  // create a new item
+  ClothingItem.create({ name, weather, imageURL, owner, likes, createdAt })
     .then((item) => {
       // if successful
-      res.status(201).send(item); // recieve the item
+      res.status(201).send({ data: item }); // recieve the item
     })
     .catch((err) => {
       // if not successful
