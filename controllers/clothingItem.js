@@ -24,11 +24,13 @@ const createItem = (req, res) => {
       // if not successful
       console.error(err); // log the error
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        return res
+          .status(BAD_REQUEST)
+          .send({ message: "Invalid data provided" });
       }
       return res
         .status(SERVER_ERROR)
-        .send({ message: "Error from createItem", err });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -42,22 +44,7 @@ const getItems = (req, res) => {
       console.error(err);
       return res
         .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server", err });
-    });
-};
-
-// update an item by ID
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail()
-    .then((item) => res.send({ data: item }))
-    .catch((err) => {
-      res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server", err });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -79,7 +66,7 @@ const deleteItem = (req, res) => {
       }
       return res
         .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server", err });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -139,7 +126,6 @@ const dislikeItem = (req, res) => {
 module.exports = {
   getItems,
   createItem,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,

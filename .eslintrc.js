@@ -1,5 +1,3 @@
-console.error("error log");
-
 module.exports = {
   env: {
     es2021: true,
