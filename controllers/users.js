@@ -55,5 +55,5 @@ const createUser = (req, res) => {
         .send({ message: "An error has occurred on the server" });
     });
 };
-
+// export the route handlers
 module.exports = { getUsers, createUser, getUserById };

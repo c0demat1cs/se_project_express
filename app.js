@@ -1,7 +1,5 @@
 const express = require("express"); // import express
 const mongoose = require("mongoose"); // import mongoose
-// const usersRouter = require("./routes/users"); // import the users router
-// const itemRouter = require("./routes/clothingItem"); // import item router
 const routes = require("./routes");
 
 const app = express(); // create an express application

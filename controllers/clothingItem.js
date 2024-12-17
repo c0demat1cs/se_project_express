@@ -1,5 +1,5 @@
-const ClothingItem = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
+const ClothingItem = require("../models/clothingItem"); // import the ClothingItem model
+const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors"); // import the error messages
 
 // route handler to create a new item
 const createItem = (req, res) => {
@@ -90,7 +90,7 @@ const likeItem = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // Add user ID if not already present
     { new: true }
   )
-    .orFail(new Error("ItemNotFound"))
+    .orFail(new Error("ItemNotFound")) // If item is not found, throw an error
     .then((item) => {
       res.setHeader("Content-Type", "application/json");
       res.send({ data: item });

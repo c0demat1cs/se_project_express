@@ -1,5 +1,5 @@
-const router = require("express").Router();
-
+const router = require("express").Router(); // import the express package
+// import the route handlers
 const {
   getItems,
   createItem,
@@ -26,5 +26,5 @@ router.delete("/:itemId/likes", dislikeItem);
 //   res.status(500).send({ message: "Router not found" });
 // });
 
-// export
+// export the router
 module.exports = router;
