@@ -18,7 +18,7 @@ const createItem = (req, res) => {
   })
     .then((item) => {
       // if successful
-      res.status(201).send({ data: item }); // recieve the item
+      res.send({ data: item }); // recieve the item
     })
     .catch((err) => {
       // if not successful
@@ -36,13 +36,13 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => {
-      res.status(200).send(items);
+      res.send(items);
     })
     .catch((err) => {
       console.error(err);
       return res
         .status(SERVER_ERROR)
-        .send({ message: "Error from getItems", err });
+        .send({ message: "An error has occurred on the server", err });
     });
 };
 
@@ -53,9 +53,11 @@ const updateItem = (req, res) => {
 
   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
     .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .then((item) => res.send({ data: item }))
     .catch((err) => {
-      res.status(SERVER_ERROR).send({ message: "Error from updateItem", err });
+      res
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occurred on the server", err });
     });
 };
 
@@ -77,7 +79,7 @@ const deleteItem = (req, res) => {
       }
       return res
         .status(SERVER_ERROR)
-        .send({ message: "Error from deleteItem", err });
+        .send({ message: "An error has occurred on the server", err });
     });
 };
 
@@ -91,7 +93,7 @@ const likeItem = (req, res) => {
     .orFail(new Error("ItemNotFound"))
     .then((item) => {
       res.setHeader("Content-Type", "application/json");
-      res.status(200).send({ data: item });
+      res.send({ data: item });
     })
     .catch((err) => {
       console.error(err);
@@ -101,7 +103,9 @@ const likeItem = (req, res) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
-      return res.status(SERVER_ERROR).send({ message: "Error liking item" });
+      return res
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -115,7 +119,7 @@ const dislikeItem = (req, res) => {
     .orFail(new Error("ItemNotFound"))
     .then((item) => {
       res.setHeader("Content-Type", "application/json");
-      res.status(200).send(item);
+      res.send(item);
     })
     .catch((err) => {
       console.error(err);
@@ -125,7 +129,9 @@ const dislikeItem = (req, res) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
-      return res.status(SERVER_ERROR).send({ message: "Error liking item" });
+      return res
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
