@@ -1,5 +1,6 @@
+// Initialize Mongoose
 const mongoose = require("mongoose"); // import the mongoose package
-
+// import the validator package
 const validator = require("validator");
 // name - the name of the user, a required string from 2 to 30 chars
 // avatar - required string for the URL of the user's image
@@ -23,14 +24,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "The email field is required"],
     validate: {
-      validator(value) {
-        return validator.isEmail(value);
+      validator(email) {
+        return validator.isEmail(email);
       },
       message: "You must enter a valid email",
     },
   },
   // password - the password of the user, a required string
-  password: { type: String, required: true },
+  password: { type: String, required: true, select: false },
 });
 
 // export the User model
