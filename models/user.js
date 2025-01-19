@@ -19,10 +19,10 @@ const userSchema = new mongoose.Schema({
     },
   },
   // email - the email of the user, a required string
-  // validate - checks if the email is valid
   email: {
     type: String,
     required: [true, "The email field is required"],
+    // validate - checks if the email is valid
     validate: {
       validator(email) {
         return validator.isEmail(email);
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
     },
   },
   // password - the password of the user, a required string
-  password: { type: String, required: true, select: false },
+  password: { type: String, required: true, minlength: 8, select: false },
 });
 
 // export the User model
