@@ -51,15 +51,12 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-    // check that there's not already an existing user with the same email matching the one in req.body
+    // handle the email already exists case
     .catch((err) => {
-      console.error(err);
-      if (err.name === "MongoError" && err.code === 11000) {
+      if (err.code === 11000) {
         return res.status(CONFLICT).send({ message: "Email already exists" });
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      throw err;
     })
     .then((user) => res.send(user))
     .catch((err) => {
