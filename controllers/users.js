@@ -24,7 +24,6 @@ const getUsers = (req, res) => {
         .send({ message: "An error has occurred on the server" });
     });
 };
-
 // route handler to get the current user
 const getCurrentUser = (req, res) => {
   // user ID destructured from req.user
@@ -111,7 +110,9 @@ const updateCurrentUser = (req, res) => {
     { name, avatar },
     { new: true, runValidators: true } // Enable validators and return the updated document
   )
-    .orFail() // Throw an error if the user is not found
+    .orFail(() => {
+      throw new Error("DocumentNotFoundError");
+    }) // Throw an error if the user is not found
     .then((user) => {
       res.send({
         _id: user._id,
@@ -122,13 +123,13 @@ const updateCurrentUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "User not found" });
+      }
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Invalid data provided" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
       }
       return res
         .status(SERVER_ERROR)
