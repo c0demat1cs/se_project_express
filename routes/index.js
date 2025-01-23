@@ -1,11 +1,18 @@
 const router = require("express").Router(); // import the express package
 const userRouter = require("./users"); // import the users router
 const itemRouter = require("./clothingItem"); // import item router
+const { login, createUser } = require("../controllers/users"); // import the login and createUser functions
+const auth = require("../middlewares/auth"); // import the auth middleware
 const { NOT_FOUND } = require("../utils/errors"); // import the error messages
 
 // allows to register hanlers for different routes
 router.use("/users", userRouter); // register the users router
 router.use("/items", itemRouter); // register the item router
+
+// authentication routes
+router.post("/signin", login);
+router.post("/signup", createUser);
+router.use(auth); // use the auth middleware
 
 // middleware to handle an unknown route
 router.use((req, res) => {

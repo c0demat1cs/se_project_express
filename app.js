@@ -16,14 +16,7 @@ mongoose
 // middleware
 app.use(express.json()); // parse JSON bodies
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "676068350c6ffc37fcb92eae", // paste the _id of the test user created in the previous step
-  };
-  next();
-});
-
-// allows to register routes and middleware
+// register main routes
 app.use(routes);
 
 // start the server
