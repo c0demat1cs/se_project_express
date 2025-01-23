@@ -1,5 +1,10 @@
 const ClothingItem = require("../models/clothingItem"); // import the ClothingItem model
-const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors"); // import the error messages
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  SERVER_ERROR,
+  FORBIDDEN,
+} = require("../utils/errors"); // import the error messages
 
 // route handler to create a new item
 const createItem = (req, res) => {
@@ -51,10 +56,20 @@ const getItems = (req, res) => {
 // delete an item by ID
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+  const { userId } = req.user;
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then((item) => {
-      res.send({ data: item });
+      // Check if the logged-in user is the owner of the item
+      if (item.owner.toString() !== userId) {
+        return res
+          .status(FORBIDDEN)
+          .send({ message: "You do not have permission to delete this item" });
+      }
+      // If the user is the owner, delete the item
+      return ClothingItem.findByIdAndDelete(itemId).then(() =>
+        res.send({ message: "Item successfully deleted" })
+      );
     })
     .catch((err) => {
       console.error(err);

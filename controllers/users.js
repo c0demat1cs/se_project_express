@@ -90,7 +90,7 @@ const login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.send({ token });
+      res.send({ token }); // return token to the user
     })
     // if the email and password are incorrect, the controller should return a 401 status code
     .catch(() => {
@@ -127,7 +127,7 @@ const updateCurrentUser = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "User not found" });
       }
-      res
+      return res
         .status(SERVER_ERROR)
         .send({ message: "An error has occurred on the server" });
     });
