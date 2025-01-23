@@ -69,7 +69,7 @@ const createUser = (req, res) => {
       res.status(201).send(userWithoutPassword);
     })
     .catch((err) => {
-      console.error(err);
+      console.error("Error during user creation", err);
       if (err.code === 11000) {
         return res.status(CONFLICT).send({ message: "Email already exists" });
       }
@@ -87,6 +87,12 @@ const createUser = (req, res) => {
 // route handler to log in a user
 const login = (req, res) => {
   const { email, password } = req.body;
+  // Validate the input
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST)
+      .send({ message: "Email and password are required" });
+  }
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
