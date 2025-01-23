@@ -27,7 +27,8 @@ const getUsers = (req, res) => {
 
 // route handler to get the current user
 const getCurrentUser = (req, res) => {
-  const { userId } = req.user;
+  // user ID destructured from req.user
+  const { _id: userId } = req.user;
   User.findById(userId)
     .orFail()
     .then((user) =>
@@ -54,23 +55,25 @@ const getCurrentUser = (req, res) => {
 
 // route handler to create a new user
 const createUser = (req, res) => {
-  // pull information from the body of the request
   const { name, avatar, email, password } = req.body;
-  console.log(req.body);
   // hash the password
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-    // handle the email already exists case
+    .then((user) => {
+      const userWithoutPassword = {
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar,
+        email: user.email,
+      };
+      res.status(201).send(userWithoutPassword);
+    })
     .catch((err) => {
+      console.error(err);
       if (err.code === 11000) {
         return res.status(CONFLICT).send({ message: "Email already exists" });
       }
-      throw err;
-    })
-    .then((user) => res.send(user))
-    .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)

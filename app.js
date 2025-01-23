@@ -1,6 +1,7 @@
 const express = require("express"); // import express
 const mongoose = require("mongoose"); // import mongoose
-const routes = require("./routes");
+const routes = require("./routes"); // import the routes
+const cors = require("cors"); // import cors
 
 const app = express(); // create an express application
 const { PORT = 3001 } = process.env; // set the port to 3001
@@ -18,6 +19,9 @@ app.use(express.json()); // parse JSON bodies
 
 // register main routes
 app.use(routes);
+
+// enable cors
+app.use(cors());
 
 // start the server
 app.listen(PORT, () => {
