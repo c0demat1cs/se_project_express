@@ -66,10 +66,12 @@ const createUser = (req, res) => {
         avatar: user.avatar,
         email: user.email,
       };
-      res.status(201).send(userWithoutPassword);
+
+      res.send(userWithoutPassword);
     })
     .catch((err) => {
       console.error("Error during user creation", err);
+      console.log("11000 is catching");
       if (err.code === 11000) {
         return res.status(CONFLICT).send({ message: "Email already exists" });
       }
