@@ -1,7 +1,7 @@
 const express = require("express"); // import express
 const mongoose = require("mongoose"); // import mongoose
-const routes = require("./routes"); // import the routes
 const cors = require("cors"); // import cors
+const routes = require("./routes"); // import the routes
 
 const app = express(); // create an express application
 const { PORT = 3001 } = process.env; // set the port to 3001
