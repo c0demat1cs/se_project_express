@@ -71,7 +71,6 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       console.error("Error during user creation", err);
-      console.log("11000 is catching");
       if (err.code === 11000) {
         return res.status(CONFLICT).send({ message: "Email already exists" });
       }
@@ -95,17 +94,19 @@ const login = (req, res) => {
       .status(BAD_REQUEST)
       .send({ message: "Email and password are required" });
   }
-  User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: "7d",
-      });
-      res.send({ token }); // return token to the user
-    })
-    // if the email and password are incorrect, the controller should return a 401 status code
-    .catch(() => {
-      res.status(UNAUTHORIZED).send({ message: "Authorization Required" });
-    });
+  return (
+    User.findUserByCredentials(email, password)
+      .then((user) => {
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+          expiresIn: "7d",
+        });
+        res.send({ token }); // return token to the user
+      })
+      // if the email and password are incorrect, return a 401 status code
+      .catch(() => {
+        res.status(UNAUTHORIZED).send({ message: "Authorization Required" });
+      })
+  );
 };
 
 // route to update user
