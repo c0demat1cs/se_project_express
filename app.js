@@ -17,11 +17,11 @@ mongoose
 // middleware
 app.use(express.json()); // parse JSON bodies
 
-// register main routes
-app.use(routes);
-
 // enable cors
 app.use(cors());
+
+// register main routes
+app.use(routes);
 
 // start the server
 app.listen(PORT, () => {
