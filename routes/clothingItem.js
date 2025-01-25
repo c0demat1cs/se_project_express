@@ -1,4 +1,5 @@
 const router = require("express").Router(); // import the express package
+const auth = require("../middlewares/auth");
 // import the route handlers
 const {
   getItems,
@@ -8,10 +9,15 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItem");
 
-// create a new item
-router.post("/", createItem);
 // get all items
 router.get("/", getItems);
+
+// protect routes
+router.use(auth);
+
+// protected routes:
+// create a new item
+router.post("/", createItem);
 // update an item by ID
 router.delete("/:itemId", deleteItem);
 // like an item by ID

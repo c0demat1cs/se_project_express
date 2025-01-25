@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     },
   },
   // password - the password of the user, a required string
-  password: { type: String, required: true, minlength: 8, select: false },
+  password: { type: String, required: true, select: false },
 });
 
 // custom method to find user by credentials

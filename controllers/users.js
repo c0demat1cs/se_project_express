@@ -10,20 +10,6 @@ const {
   UNAUTHORIZED,
 } = require("../utils/errors"); // import the error messages
 
-// route handler to get all users
-const getUsers = (req, res) => {
-  console.log("getUsers");
-  User.find({})
-    .then((users) => {
-      res.send(users);
-    })
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
-    });
-};
 // route handler to get the current user
 const getCurrentUser = (req, res) => {
   // user ID destructured from req.user
@@ -88,25 +74,33 @@ const createUser = (req, res) => {
 // route handler to log in a user
 const login = (req, res) => {
   const { email, password } = req.body;
+
   // Validate the input
   if (!email || !password) {
     return res
       .status(BAD_REQUEST)
       .send({ message: "Email and password are required" });
   }
-  return (
-    User.findUserByCredentials(email, password)
-      .then((user) => {
-        const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-          expiresIn: "7d",
-        });
-        res.send({ token }); // return token to the user
-      })
-      // if the email and password are incorrect, return a 401 status code
-      .catch(() => {
-        res.status(UNAUTHORIZED).send({ message: "Authorization Required" });
-      })
-  );
+
+  // Authenticate the user
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token }); // return the token to the user
+    })
+    .catch((err) => {
+      // Check for incorrect email or password error
+      if (err.message.includes("Incorrect email or password")) {
+        return res.status(UNAUTHORIZED).send({ message: err.message });
+      }
+      // Handle all other errors
+      console.error(err);
+      return res
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occurred on the server" });
+    });
 };
 
 // route to update user
@@ -148,7 +142,6 @@ const updateCurrentUser = (req, res) => {
 
 // export the route handlers
 module.exports = {
-  getUsers,
   createUser,
   getCurrentUser,
   login,

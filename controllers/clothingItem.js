@@ -11,15 +11,13 @@ const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
   // pull information from the body of the request
-  const { name, weather, imageUrl, likes, createdAt } = req.body;
+  const { name, weather, imageUrl } = req.body;
   // create a new item
   ClothingItem.create({
     name,
     weather,
     imageUrl,
     owner: req.user._id,
-    likes,
-    createdAt,
   })
     .then((item) => {
       // if successful
@@ -57,7 +55,7 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
   const { _id: userId } = req.user;
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
       // Check if the logged-in user is the owner of the item
