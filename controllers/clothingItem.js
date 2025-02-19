@@ -1,15 +1,10 @@
 const ClothingItem = require("../models/clothingItem"); // import the ClothingItem model
-const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  SERVER_ERROR,
-  FORBIDDEN,
-} = require("../utils/errors"); // import the error messages
+const BadRequestError = require("../customErrors/bad-request-err");
+const NotFoundError = require("../customErrors/not-found-err");
+const ForbiddenError = require("../customErrors/forbidden-err");
 
 // route handler to create a new item
-const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
+const createItem = (req, res, next) => {
   // pull information from the body of the request
   const { name, weather, imageUrl } = req.body;
   // create a new item
@@ -27,42 +22,41 @@ const createItem = (req, res) => {
       // if not successful
       console.error(err); // log the error
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid data provided" });
+        next(
+          new BadRequestError("Invalid data provided for creating an item.")
+        );
+      } else {
+        next(err);
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 
 // route handler to get all items
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => {
       res.send(items);
     })
     .catch((err) => {
-      console.error(err);
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      next(err);
     });
 };
 
 // delete an item by ID
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const { _id: userId } = req.user;
+
   ClothingItem.findById(itemId)
-    .orFail()
+    .orFail(() => {
+      throw new NotFoundError("Item not found");
+    })
     .then((item) => {
       // Check if the logged-in user is the owner of the item
       if (item.owner.toString() !== userId) {
-        return res
-          .status(FORBIDDEN)
-          .send({ message: "You do not have permission to delete this item" });
+        throw new ForbiddenError(
+          "You do not have permission to delete this item"
+        );
       }
       // If the user is the owner, delete the item
       return ClothingItem.findByIdAndDelete(itemId).then(() =>
@@ -70,68 +64,57 @@ const deleteItem = (req, res) => {
       );
     })
     .catch((err) => {
-      console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
-      }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid ID" });
+        next(new BadRequestError("Invalid item ID format"));
+      } else {
+        next(err);
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 
 // like an item by ID
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } }, // Add user ID if not already present
     { new: true }
   )
-    .orFail(new Error("ItemNotFound")) // If item is not found, throw an error
+    .orFail(() => {
+      throw new NotFoundError("Item not found");
+    }) // If item is not found, throw an error
     .then((item) => {
       res.setHeader("Content-Type", "application/json");
       res.send({ data: item });
     })
     .catch((err) => {
-      console.error(err);
-      if (err.message === "ItemNotFound") {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
-      }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+        next(new BadRequestError("Invalid item ID format"));
+      } else {
+        next(err);
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 
 // Dislike (unlike) an item
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail(new Error("ItemNotFound"))
+    .orFail(() => {
+      throw new NotFoundError("Item not found");
+    })
     .then((item) => {
       res.setHeader("Content-Type", "application/json");
       res.send(item);
     })
     .catch((err) => {
-      console.error(err);
-      if (err.message === "ItemNotFound") {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
-      }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+        next(new BadRequestError("Invalid item ID format"));
+      } else {
+        next(err);
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 

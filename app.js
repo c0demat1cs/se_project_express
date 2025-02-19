@@ -2,6 +2,7 @@ const express = require("express"); // import express
 const mongoose = require("mongoose"); // import mongoose
 const cors = require("cors"); // import cors
 const routes = require("./routes"); // import the routes
+const errorHandler = require("./middlewares/error-handler");
 
 const app = express(); // create an express application
 const { PORT = 3001 } = process.env; // set the port to 3001
@@ -22,6 +23,8 @@ app.use(express.json()); // parse JSON bodies
 
 // register main routes
 app.use(routes);
+
+app.use(errorHandler);
 
 // start the server
 app.listen(PORT, () => {

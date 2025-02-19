@@ -2,20 +2,19 @@ const bcrypt = require("bcryptjs"); // import bcrypt
 const jwt = require("jsonwebtoken"); // import jsonwebtoken
 const { JWT_SECRET } = require("../utils/config"); // import the JWT_SECRET
 const User = require("../models/user"); // import the User model
-const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  CONFLICT,
-  SERVER_ERROR,
-  UNAUTHORIZED,
-} = require("../utils/errors"); // import the error messages
+const BadRequestError = require("../customErrors/bad-request-err");
+const UnauthorizedError = require("../customErrors/unauthorized-err");
+const NotFoundError = require("../customErrors/not-found-err");
+const ConflictError = require("../customErrors/conflict-err");
 
 // route handler to get the current user
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   // user ID destructured from req.user
   const { _id: userId } = req.user;
   User.findById(userId)
-    .orFail()
+    .orFail(() => {
+      throw new NotFoundError("User not found");
+    })
     .then((user) =>
       res.send({
         _id: user._id,
@@ -25,21 +24,16 @@ const getCurrentUser = (req, res) => {
       })
     )
     .catch((err) => {
-      console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
-      }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid ID" });
+        next(new BadRequestError("Invalid user ID format"));
+      } else {
+        next(err);
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 
 // route handler to create a new user
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   // hash the password
   bcrypt
@@ -56,30 +50,23 @@ const createUser = (req, res) => {
       res.send(userWithoutPassword);
     })
     .catch((err) => {
-      console.error("Error during user creation", err);
       if (err.code === 11000) {
-        return res.status(CONFLICT).send({ message: "Email already exists" });
+        next(new ConflictError("Email already in use"));
+      } else if (err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data provided"));
+      } else {
+        next(err);
       }
-      if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid data provided" });
-      }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 
 // route handler to log in a user
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   // Validate the input
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Email and password are required" });
+    return next(new BadRequestError("Email and password are required"));
   }
 
   // Authenticate the user
@@ -90,21 +77,13 @@ const login = (req, res) => {
       });
       res.send({ token }); // return the token to the user
     })
-    .catch((err) => {
-      // Check for incorrect email or password error
-      if (err.message.includes("Incorrect email or password")) {
-        return res.status(UNAUTHORIZED).send({ message: err.message });
-      }
-      // Handle all other errors
-      console.error(err);
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
+    .catch(() => {
+      next(new UnauthorizedError("Invalid email or password"));
     });
 };
 
 // route to update user
-const updateCurrentUser = (req, res) => {
+const updateCurrentUser = (req, res, next) => {
   const { name, avatar } = req.body; // Extract name and avatar from the request body
   const { _id } = req.user; // Get the user ID from req.user
 
@@ -114,7 +93,7 @@ const updateCurrentUser = (req, res) => {
     { new: true, runValidators: true } // Enable validators and return the updated document
   )
     .orFail(() => {
-      throw new Error("DocumentNotFoundError");
+      throw new NotFoundError("User not found");
     }) // Throw an error if the user is not found
     .then((user) => {
       res.send({
@@ -126,17 +105,12 @@ const updateCurrentUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
-      }
+
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid data provided" });
+        next(new BadRequestError("Invalid data provided"));
+      } else {
+        next(err);
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 
