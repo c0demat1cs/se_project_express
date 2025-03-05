@@ -10,7 +10,7 @@ const {
 } = require("../controllers/clothingItem");
 const {
   validateClothingItem,
-  validateId,
+  validateItemId,
 } = require("../middlewares/validation");
 
 // get all items
@@ -23,7 +23,7 @@ router.use(auth);
 // create a new item
 router.post("/", validateClothingItem, createItem);
 // update an item by ID
-router.delete("/:itemId", validateId, deleteItem);
+router.delete("/:itemId", validateItemId, deleteItem);
 // like an item by ID
 router.put("/:itemId/likes", likeItem);
 // dislike an item by ID
