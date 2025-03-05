@@ -8,6 +8,10 @@ const {
   likeItem,
   dislikeItem,
 } = require("../controllers/clothingItem");
+const {
+  validateClothingItem,
+  validateId,
+} = require("../middlewares/validation");
 
 // get all items
 router.get("/", getItems);
@@ -17,9 +21,9 @@ router.use(auth);
 
 // protected routes:
 // create a new item
-router.post("/", createItem);
+router.post("/", validateClothingItem, createItem);
 // update an item by ID
-router.delete("/:itemId", deleteItem);
+router.delete("/:itemId", validateId, deleteItem);
 // like an item by ID
 router.put("/:itemId/likes", likeItem);
 // dislike an item by ID

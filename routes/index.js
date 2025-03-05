@@ -3,10 +3,14 @@ const userRouter = require("./users"); // import the users router
 const itemRouter = require("./clothingItem"); // import item router
 const { login, createUser } = require("../controllers/users"); // import the login and createUser functions
 const { NOT_FOUND } = require("../utils/errors"); // import the error messages
+const {
+  validateUserRegistration,
+  validateUserLogin,
+} = require("../middlewares/validation");
 
 // authentication routes
-router.post("/signin", login);
-router.post("/signup", createUser);
+router.post("/signin", validateUserLogin, login);
+router.post("/signup", validateUserRegistration, createUser);
 
 // allows to register hanlers for different routes
 router.use("/users", userRouter); // register the users router

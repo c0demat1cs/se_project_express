@@ -1,6 +1,8 @@
 const express = require("express"); // import express
 const mongoose = require("mongoose"); // import mongoose
 const cors = require("cors"); // import cors
+const { errors } = require("celebrate");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 const routes = require("./routes"); // import the routes
 const errorHandler = require("./middlewares/error-handler");
 
@@ -21,9 +23,15 @@ app.use(cors());
 // middleware
 app.use(express.json()); // parse JSON bodies
 
+// enable the error logger
+app.use(requestLogger);
 // register main routes
 app.use(routes);
-
+// enable the error logger
+app.use(errorLogger);
+// celebrate error handler
+app.use(errors());
+// centralized error handler
 app.use(errorHandler);
 
 // start the server
