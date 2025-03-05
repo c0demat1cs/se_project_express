@@ -1,6 +1,7 @@
 const express = require("express"); // import express
 const mongoose = require("mongoose"); // import mongoose
 const cors = require("cors"); // import cors
+require("dotenv").config(); // import dotenv
 const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const routes = require("./routes"); // import the routes
