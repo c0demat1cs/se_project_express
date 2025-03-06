@@ -106,6 +106,21 @@ const validateQueryParams = celebrate({
   }),
 });
 
+// User Update Validation (PATCH /me)
+const validateUserUpdate = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required().messages({
+      "string.min": 'The minimum length of the "name" field is 2 characters.',
+      "string.max": 'The maximum length of the "name" field is 30 characters.',
+      "string.empty": 'The "name" field must not be empty.',
+    }),
+    avatar: Joi.string().required().custom(validateURL).messages({
+      "string.empty": 'The "avatar" field must not be empty.',
+      "string.uri": 'The "avatar" field must be a valid URL.',
+    }),
+  }),
+});
+
 // Export All Validators
 
 module.exports = {
@@ -116,4 +131,5 @@ module.exports = {
   validateId,
   validateItemId,
   validateQueryParams,
+  validateUserUpdate,
 };

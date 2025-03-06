@@ -25,9 +25,9 @@ router.post("/", validateClothingItem, createItem);
 // update an item by ID
 router.delete("/:itemId", validateItemId, deleteItem);
 // like an item by ID
-router.put("/:itemId/likes", likeItem);
+router.put("/:itemId/likes", validateItemId, likeItem);
 // dislike an item by ID
-router.delete("/:itemId/likes", dislikeItem);
+router.delete("/:itemId/likes", validateItemId, dislikeItem);
 
 // export the router
 module.exports = router;
