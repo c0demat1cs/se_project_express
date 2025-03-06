@@ -41,7 +41,7 @@ Development Tools & Techniques:
 - ESLint & Prettier: Code linting and formatting (Airbnb Style Guide).
 - Nodemon: Enables hot reload for backend development.
 - Error Handling: Ensures proper status codes and messages for validation and server errors.
-- Middleware: Authentication middleware secures routes, ensuring only authorized users can access protected endpoints. 
+- Middleware: Authentication middleware secures routes, ensuring only authorized users can access protected endpoints.
 
 ## Running the Project
 
@@ -52,3 +52,7 @@ Development Tools & Techniques:
 ### Testing
 
 Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+
+## Domain Name
+
+https://www.wtwr.unibutton.com/

@@ -26,6 +26,12 @@ app.use(express.json()); // parse JSON bodies
 
 // enable the error logger
 app.use(requestLogger);
+// test route to check the error logger
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
 // register main routes
 app.use(routes);
 // enable the error logger
